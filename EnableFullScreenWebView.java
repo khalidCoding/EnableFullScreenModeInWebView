@@ -1,26 +1,36 @@
-private class ChromeClient extends WebChromeClient {
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.view.View;
+import android.webkit.WebChromeClient;
+import android.widget.FrameLayout;
+
+public class ChromeClient extends WebChromeClient {
     private View mCustomView;
     private WebChromeClient.CustomViewCallback mCustomViewCallback;
-    protected FrameLayout mFullscreenContainer;
     private int mOriginalOrientation;
     private int mOriginalSystemUiVisibility;
+    private Activity mActivity;
 
-    ChromeClient() {}
+    ChromeClient(Activity activity) {
+        mActivity = activity;
+    }
 
     public Bitmap getDefaultVideoPoster()
     {
         if (mCustomView == null) {
             return null;
         }
-        return BitmapFactory.decodeResource(getApplicationContext().getResources(), 2130837573);
+        return BitmapFactory.decodeResource(mActivity.getResources(), 2130837573);
     }
 
     public void onHideCustomView()
     {
-        ((FrameLayout)getWindow().getDecorView()).removeView(this.mCustomView);
+        ((FrameLayout)mActivity.getWindow().getDecorView()).removeView(this.mCustomView);
         this.mCustomView = null;
-        getWindow().getDecorView().setSystemUiVisibility(this.mOriginalSystemUiVisibility);
-        setRequestedOrientation(this.mOriginalOrientation);
+        mActivity.getWindow().getDecorView().setSystemUiVisibility(this.mOriginalSystemUiVisibility);
+        mActivity.setRequestedOrientation(this.mOriginalOrientation);
         this.mCustomViewCallback.onCustomViewHidden();
         this.mCustomViewCallback = null;
     }
@@ -33,10 +43,10 @@ private class ChromeClient extends WebChromeClient {
             return;
         }
         this.mCustomView = paramView;
-        this.mOriginalSystemUiVisibility = getWindow().getDecorView().getSystemUiVisibility();
-        this.mOriginalOrientation = getRequestedOrientation();
+        this.mOriginalSystemUiVisibility = mActivity.getWindow().getDecorView().getSystemUiVisibility();
+        this.mOriginalOrientation = mActivity.getRequestedOrientation();
         this.mCustomViewCallback = paramCustomViewCallback;
-        ((FrameLayout)getWindow().getDecorView()).addView(this.mCustomView, new FrameLayout.LayoutParams(-1, -1));
-        getWindow().getDecorView().setSystemUiVisibility(3846 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+        ((FrameLayout)mActivity.getWindow().getDecorView()).addView(this.mCustomView, new FrameLayout.LayoutParams(-1, -1));
+        mActivity.getWindow().getDecorView().setSystemUiVisibility(3846 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
     }
 }
